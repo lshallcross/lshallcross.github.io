@@ -1,0 +1,127 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Top 10 U.S. Cities for Car Theft</title>
+    <style>
+        .axis text{
+          font-family: Helvetica, Arial, sans-serif;
+          font-size: 10px;
+          text-anchor: end;
+        }
+        .axis path{
+          fill:none;
+          stroke:black;
+          stroke-width: 2px;
+        }
+        .bar{
+            stroke: none;
+            fill: #003380;
+        }
+        .textlabel{
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+
+        }
+    </style>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+<body>
+
+<script>
+
+    var margin = {top:70, right:0, bottom:170, left:30},
+        width  = 900 - margin.left - margin.right,
+        height = 700 - margin.top  - margin.bottom;
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
+
+    var chart = svg.append("g")
+        .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+    var x = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .1);//leave off domain
+
+    var y = d3.scale.linear()
+        .range([height, 0]);//leave off domain
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+    d3.csv("Cartheftdata.csv", convertToNumber, function(error, data){
+
+        //optionally sort data
+        data.sort(function(a,b){ return b["2012 Rate"] - a["2012 Rate"]; });
+
+        //set the domains for x and y functions here
+        x.domain(data.map(function(d){ return d["Metro area"]; }));
+        y.domain([0, d3.max( data.map(function(d){ return d["2012 Rate"]; }) )]);
+["2012 Rate"]
+        chart.selectAll(".bar")
+            .data(data)
+            .enter()
+            .append("rect")
+            .attr("x", function(d){ return x(d["Metro area"]); })
+            .attr("y", function(d){ return y(d["2012 Rate"]); })
+            .attr("width", function(d){ return x.rangeBand(); })
+            .attr("height", function(d){ return height - y(d["2012 Rate"]); })
+            .attr("class", "bar");
+
+        //setting the axes
+        svg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .call(yAxis);
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(" + margin.left + "," + (height + margin.top) + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-65)")
+            .style("text-anchor", "end");
+
+
+        //adding a label at the top of the chart
+        svg.append("g")
+            .attr("transform", "translate(" + (width/2) + ", 25)")
+            .append("text")
+            .text("U.S. Cities with Highest Rate of Vehicle Theft | 2012")
+            .style({"text-anchor":"middle", "font-family":"Arial", "font-weight":"800"});
+
+
+//add text labels to the top of each bar
+svg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .selectAll(".textlabel")
+    .data(data)
+    .enter()
+    .append("text")
+    .attr("class", "textlabel")
+    .attr("x", function(d){ return x(d["Metro area"]) + (x.rangeBand()/2); })
+    .attr("y", function(d){ return y(d["2012 Rate"]) - 3; })
+    .text(function(d){ return d["2012 Rate"]; })
+    .style({"text-anchor":"middle"});
+    //more info about d3 format method:
+    // http://koaning.s3-website-us-west-2.amazonaws.com/html/d3format.html
+
+
+
+
+    });//closes the csv loading
+
+    function convertToNumber(d){
+        d["2012 Rate"] = +d["2012 Rate"]; 
+        return d;
+    }
+
+</script>
+</body>
+</html>
