@@ -1,0 +1,128 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Bubble chart</title>
+    <style>
+     
+    </style>
+    
+</head>
+<body>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script>
+
+
+
+var width    = 600,
+    height   = 600,
+    diameter = 500, //max size of the bubbles
+    color    = d3.scale.category10(); //color category
+
+    //color = d3.scale.ordinal().range(["gray", "blue", "green", "purple"]);
+
+var bubble = d3.layout.pack()
+    .sort(null)
+    .size([diameter, diameter])
+    .padding(1.5);
+
+var svg = d3.select("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("class", "bubble");
+
+d3.csv("mentalhealth.csv", function(error, data){
+
+
+
+    //convert numerical values from strings to numbers
+    data = data.map(function(d){ d.value = +d["Amount"]; return d; });
+
+    //bubbles needs very specific format, convert data to this.
+    var nodes = bubble.nodes({children:data}).filter(function(d) { return !d.children; });
+
+    //setup the chart
+    var bubbles = svg.append("g")
+        .attr("transform", "translate(0,40)")
+        .selectAll(".bubble")
+        .data(nodes)
+        .enter();
+
+    //create the bubbles
+    bubbles.append("circle")
+        .attr("r", function(d){ return 0; })
+        .attr("cx", function(d){ return d.x; })
+        .attr("cy", function(d){ return d.y; })
+        .transition()
+        .duration(2000)
+        .delay(function(d, i){ return i * 250; }) //each delay will get longer and longer for each circle
+        .attr("r", function(d){ return d.r; })
+        .style("fill", function(d) { return color(d.value); })
+        .each("end", function(d){
+
+    bubbles.append("text")
+                .attr("x", function(d){ return d.x; })
+                .attr("y", function(d){ return d.y - 4; })
+                .attr("text-anchor", "middle")
+                .text(function(d){ return d.State; })
+                .style({
+                    "fill":"black", 
+                    "font-family":"Helvetica, Arial, san-serif",
+                    "font-size": "13px"
+                    });
+
+    bubbles.append("text")
+                .attr("x", function(d){ return d.x; })
+                .attr("y", function(d){ return d.y + 12; })
+                .attr("text-anchor", "middle")
+                .text(function(d){ return d3.format("$,")(d.Amount); })
+                .style({
+                    "fill":"black", 
+                    "font-family":"Helvetica, Arial, san-serif",
+                    "font-size": "13px"
+                });
+
+        });
+
+
+
+
+
+    //format the text for each bubble
+    // bubbles.each("end", function(d){
+    //     console.log("dtest")
+
+
+    // })
+
+
+
+
+    d3.select("svg")
+        .append("text")
+        .attr("x", 10) //also can do width/2
+        .attr("y", 30)
+        .style({"font-family":"Helvetica, sans-serif", "font-size":"28px"})
+        .text("Spending on Mental Health Services");
+
+         d3.select("svg")
+        .append("text")
+        .attr("x", 45) //also can do width/2
+        .attr("y", 57)
+        .style({"font-family":"Helvetica, sans-serif", "font-size":"15px"})
+        .text("By State Mental Health Agencies, Per Capita, in 2010");
+
+         d3.select("svg")
+        .append("text")
+        .attr("x", 10) //also can do width/2
+        .attr("y", 550)
+        .style({"font-family":"Helvetica, sans-serif", "font-size":"10px"})
+        .text("Source: Kaiser Family Foundation / National Assoc. of State Mental Health Program Directors Research Institute");
+
+
+        
+})
+
+</script>
+</body>
+</html>

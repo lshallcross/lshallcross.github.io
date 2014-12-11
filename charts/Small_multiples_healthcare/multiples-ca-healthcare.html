@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Person Grid Example</title>
+    <style type="text/css">
+        #graphic{
+            display:block;
+            margin: 10px auto;
+        }
+
+
+         #multiple {
+
+            margin-top: 45px;
+            font-family: Arial;
+         
+
+
+        }
+
+    </style>
+</head>
+<body>
+<div id="multiple">
+
+    <h1 style="margin-left:300px">2013 Health Insurance Coverage in California</h1>
+</div>
+
+
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+    var width  = 900,
+        height = 800;
+
+    var svg = d3.select("#multiple")
+        .append("svg")
+        .attr("id", "graphic")
+        .attr("width", width)
+        .attr("height", height);
+
+
+
+    var howManyAcross = Math.floor(width / 25);
+
+    var thedata = [];
+
+    /*
+     * Your job is to create a For Loop and populate thedata variable with color strings.
+     *
+     * You can add to a color string to an Array by executing thedata.push("#000000");
+     *
+     * Use conditional statements to setup different color strings for different segments of the chart.
+     */
+
+     for(var i=0; i<45; i++){
+
+        thedata.push("#E60000");
+     }
+
+     for(var i=0; i<19; i++){
+
+        thedata.push("#FF6600");
+     }
+
+     for(var i=0; i<15; i++){
+
+        thedata.push("#FFCC00");
+     }
+
+     for(var i=0; i<12; i++){
+
+        thedata.push("#7ACC29");
+     }
+
+     for(var i=0; i<7; i++){
+
+        thedata.push("#00CCA3");
+     }
+
+     for(var i=0; i<2; i++){
+
+        thedata.push("#47B1CC");
+     }
+
+
+
+    //make sure to populate the data before the code below
+    svg.selectAll("g")
+        .data(thedata)
+        .enter()
+        .append("g")
+        .attr("transform", function(d, i){ return "translate(" + ((i % howManyAcross) * 25) + "," + (Math.floor(i/howManyAcross) * 70) + ")"})
+        .append("path")
+        .attr("d", "M18,8c0-4.417-3.582-8-8-8C5.582,0,2,3.583,2,8c0,4.418,3.582,8,8,8C14.418,16,18,12.418,18,8z M13.291,16H10H6.708c-3.682,0-6.666,2.984-6.666,6.666V41.82c0,1.75,1.334,3.172,3.038,3.342v19.779H16.92V45.162c1.703-0.17,3.037-1.592,3.037-3.342V22.666C19.957,18.984,16.973,16,13.291,16z")
+        .style("fill", "white")
+        .transition()
+        .duration(500)
+        .delay(function(d,i){ return i * 20;})
+        .style("fill", function(d){ return d; });
+
+    // d3.select("svg")
+    //     .append("text")
+    //     .attr("x", width/2) //also can do width/2
+    //     .attr("y", 20)
+    //     .style({"font-family":"Helvetica, sans-serif", "font-size":"36px"})
+    //     .text("Health Insurance Coverage in California");
+
+    d3.select("svg")
+        .append("text")
+        .attr("x", width/18) //also can do width/2
+        .attr("y", 450)
+        .style({"font-family":"Helvetica, sans-serif", "font-size":"11px"})
+        .text("Source: Kaiser Family Foundation");
+
+       
+
+    d3.select("svg")
+        .append("rect")
+        .attr("x", 200) //also can do width/2
+        .attr("y", 250)
+        .attr("width", 20)
+        .attr("height", 20)
+        .style("fill", "#E60000");
+
+    d3.select("svg")
+        .append("text")
+        .attr("x", 230) //also can do width/2
+        .attr("y", 265)
+        .style({"font-family":"Helvetica, sans-serif", "font-size":"14px"})
+        .text("45% employer provided");
+
+
+
+    d3.select("svg")
+        .append("rect")
+        .attr("x", 200) //also can do width/2
+        .attr("y", 290)
+        .attr("width", 20)
+        .attr("height", 20)
+        .style("fill", "#FF6600");
+
+    d3.select("svg")
+        .append("text")
+        .attr("x", 230) //also can do width/2
+        .attr("y", 305)
+        .style({"font-family":"Helvetica, sans-serif", "font-size":"14px"})
+        .text("19% Medicaid");
+
+
+    d3.select("svg")
+        .append("rect")
+        .attr("x", 200) //also can do width/2
+        .attr("y", 332)
+        .attr("width", 20)
+        .attr("height", 20)
+        .style("fill", "#FFCC00");
+
+    d3.select("svg")
+        .append("text")
+        .attr("x", 230) //also can do width/2
+        .attr("y", 347)
+        .style({"font-family":"Helvetica, sans-serif", "font-size":"14px"})
+        .text("15% uninsured");
+
+
+
+    d3.select("svg")
+        .append("rect")
+        .attr("x", 425) //also can do width/2
+        .attr("y", 250)
+        .attr("width", 20)
+        .attr("height", 20)
+        .style("fill", "#7ACC29");
+
+    d3.select("svg")
+        .append("text")
+        .attr("x", 455) //also can do width/2
+        .attr("y", 265)
+        .style({"font-family":"Helvetica, sans-serif", "font-size":"14px"})
+        .text("12% Medicare");
+
+
+
+    d3.select("svg")
+        .append("rect")
+        .attr("x", 425) //also can do width/2
+        .attr("y", 291)
+        .attr("width", 20)
+        .attr("height", 20)
+        .style("fill", "#00CCA3");
+
+    d3.select("svg")
+        .append("text")
+        .attr("x", 455) //also can do width/2
+        .attr("y", 306)
+        .style({"font-family":"Helvetica, sans-serif", "font-size":"14px"})
+        .text("7% other-private");
+
+
+    d3.select("svg")
+        .append("rect")
+        .attr("x", 425) //also can do width/2
+        .attr("y", 334)
+        .attr("width", 20)
+        .attr("height", 20)
+        .style("fill", "#47B1CC");
+
+    d3.select("svg")
+        .append("text")
+        .attr("x", 455) //also can do width/2
+        .attr("y", 350)
+        .style({"font-family":"Helvetica, sans-serif", "font-size":"14px"})
+        .text("2% other-public");
+
+
+
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Example chart</title>
+    <link rel="stylesheet" type="text/css" href="d3-tip.css">
+    <style>
+        .axis text{
+          font-family: Helvetica, Arial, sans-serif;
+          font-size: 10px;
+          text-anchor: end;
+        }
+        .axis path{
+          fill:none;
+          stroke:black;
+          stroke-width: 1.5px;
+        }
+        .bar{
+            stroke: none;
+            fill: mediumseagreen;
+        }
+    </style>
+
+</head>
+<body>
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="d3-tip.js"></script>
+
+<script>
+
+    var margin = {top:75, right:0, bottom:90, left:50},
+        width  = 900 - margin.left - margin.right,
+        height = 700 - margin.top  - margin.bottom;
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
+
+    var chart = svg.append("g")
+        .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+        
+
+
+
+
+        var tip = d3.tip()
+        .attr("class", "d3-tip")
+        .html(function(d){
+
+        return d.Country + "<br>" + d3.format("$,")(d.Amount);
+
+        })
+        .style({"font-family":"Helvetica, sans-serif"});
+
+        svg.call(tip);
+
+
+
+
+
+
+    var x = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .1);//leave off domain
+
+    var y = d3.scale.linear()
+        .range([height, 0]);//leave off domain
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+
+ 
+
+
+
+    d3.csv("2012data.csv", convertToNumber, function(error, data){
+
+        //optionally sort data
+        data.sort(function(a,b){ return b.Amount - a.Amount; });
+
+        //set the domains for x and y functions here
+        x.domain(data.map(function(d){ return d.Country; }));
+        y.domain([-30, d3.max( data.map(function(d){ return d.Amount; }) )]);
+
+        chart.selectAll(".bar")
+            .data(data)
+            .enter()
+            .append("rect")
+            .attr("x", function(d){ return x(d.Country); })
+            .attr("y", function(d){ return height; })
+            .attr("width", function(d){ return x.rangeBand(); })
+            .attr("height", function(d){ return 0; })
+            .attr("class", "bar")
+        
+            .on("mouseover", tip.show)
+            .on("mouseout", tip.hide)
+
+            .transition()   
+            .duration(300)
+            .delay(function(d,i){ return i * 200;})
+            .attr("y", function(d){ return y(d.Amount); })
+            .attr("height", function(d){ return height - y(d.Amount); })
+            .style("fill", function(d){ return d; });
+           
+            
+
+            d3.select("svg")
+             .append("text")
+             .attr("x", 300) //also can do width/2
+             .attr("y", 40)
+             .style({"font-family":"Helvetica, sans-serif", "font-size":"32px"})
+             .text("2012 Health Expenditure by Nation");
+
+             d3.select("svg")
+             .append("text")
+             .attr("x", 400) //also can do width/2
+             .attr("y", 70)
+             .style({"font-family":"Helvetica, sans-serif", "font-size":"22px"})
+             .text("Per capita, in U.S. dollars");
+
+             d3.select("svg")
+             .append("text")
+             .attr("x", width/20) //also can do width/2
+             .attr("y", 695)
+             .style({"font-family":"Helvetica, sans-serif", "font-size":"10px"})
+             .text("Source: World Health Organization");
+
+        //setting the axes
+        svg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .call(yAxis);
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(" + margin.left + "," + (height + margin.top) + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-65)")
+            .style("text-anchor", "end");
+
+
+        svg.append("g")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .selectAll(".textlabel")
+           .data(data)
+           .enter()
+           .append("text")
+           .attr("class", "textlabel")
+           .attr("x", function(d){ return xScale(d["Country"]) + (xScale.rangeBand()/2); })
+           .attr("y", function(d){ return yScale(d["Amount"]) - 3; })
+           .text(function(d){ return d3.format("$,")(d["Amount"]); });
+
+        // svg.append("g")
+        //    .attr("transform", "translate(" + (width/2) + ", 15)")
+        //    .append("text")
+        //    .text("Stock Wealth by Age")
+        //    .style({"text-anchor":"middle", "font-family":"Arial", "font-weight":"800"});
+
+          
+
+    });
+
+    function convertToNumber(d){
+        d.Amount = +d.Amount; 
+        return d;
+    }
+
+</script>
+</body>
+</html>
